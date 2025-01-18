@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Tank Levels</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+    // Firebase config
+    const firebaseConfig = {
+	apiKey: "AIzaSyDzYm7ijoGFQByE3A0Zgude2lx2fjCm-5U",
+  	authDomain: "watertankleveldetector.firebaseapp.com",
+  	databaseURL: "https://watertankleveldetector-default-rtdb.asia-southeast1.firebasedatabase.app",
+  	projectId: "watertankleveldetector",
+  	storageBucket: "watertankleveldetector.firebasestorage.app",
+  	messagingSenderId: "949544829641",
+  	appId: "1:949544829641:web:b7852887052e362b0f8318",
+  	measurementId: "G-6Y4TKYFX0K"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // References to the distance nodes for each tank
+    const tank1Ref = ref(database, 'C_22_Water_Tank_G/Distance');
+    const tank2Ref = ref(database, 'C_22_Water_Tank_1/Distance');
+    const tank3Ref = ref(database, 'C_22_Water_Tank_2/Distance');
+
+    // Update the UI with percentage-based bars
+    function updateTankLevel(tankId, tanktextId, distance) {
+	const tank = document.getElementById(tankId);
+	tank.style.height = 0.8*distance + '%';
+	const tanktext = document.getElementById(tanktextId);
+	tanktext.textContent = tankId + ' Water Level: ' + distance + '%';
+    }
+
+    // Listen for changes in the distance values for each tank
+    onValue(tank1Ref, (snapshot) => {
+      const distance1 = snapshot.val();
+      updateTankLevel('Tank_G','Tank_G_text', distance1);
+    });
+
+    onValue(tank2Ref, (snapshot) => {
+      const distance2 = snapshot.val();
+      updateTankLevel('Tank_1','Tank_1_text', distance2);
+    });
+
+    onValue(tank3Ref, (snapshot) => {
+      const distance3 = snapshot.val();
+      updateTankLevel('Tank_2','Tank_2_text', distance3);
+    });
+  </script>
+
+  <style>
+	h1 {
+	    text-align: center;
+            text-shadow: 1px 1px 2px grey;
+        }
+	h3 {
+	    position: absolute;
+            z-index: 1;
+            color: blue;
+            margin: 0;
+            text-shadow: 1px 1px 2px grey;
+            text-align: center;
+        }
+	.boxes {
+            display: flex;
+            justify-content: space-between;
+            width: 90vw; /* Container width takes up 90% of the screen width */
+        }
+    	.container {
+            width: 30%; /* Each container takes up 30% of the width */
+            height: 70vh; /* Box height is 70% of the screen height */
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+    	.tank {
+            position: absolute;
+            bottom: 5%;
+            left: 5%;
+            width: 90%;
+            height: 80%;
+            background-color: grey;
+        }
+
+        .fill {
+            position: absolute;
+            bottom: 5%;
+            left: 5%;
+            width: 90%;
+            background-color: green;
+            height: 0; /* Start with zero height */
+            transition: height 0.5s ease-in-out;
+        }
+
+  </style>
+</head>
+<body>
+
+  <h1>Water Tank Levels</h1>
+	<div class="boxes">
+
+  <div class="container">
+    <h3 id="Tank_G_text">Tank_G : Loading</h3>
+    <div class="tank"></div>
+    <div class="fill" id="Tank_G"></div>
+  </div>
+
+  <div class="container">
+    <h3 id="Tank_1_text">Tank_1 : Loading</h3>
+    <div class="tank"></div>
+    <div class="fill" id="Tank_1"></div>
+  </div>
+
+  <div class="container">
+    <h3 id="Tank_2_text">Tank_2 : Loading</h3>
+    <div class="tank"></div>
+    <div class="fill" id="Tank_2"></div>
+  </div>
+
+	</div>
+
+</body>
+</html>
